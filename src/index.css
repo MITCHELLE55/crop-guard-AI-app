@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  color: #1d2b24;
+  background: #f5f7f5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  font-weight: 400;
+
+  --green-950: #103b2a;
+  --green-900: #164a34;
+  --green-800: #1b6043;
+  --green-700: #27805a;
+  --green-600: #32a06e;
+  --green-100: #e8f4ec;
+  --green-50: #f3f8f4;
+  --ink: #1d2b24;
+  --muted: #78847d;
+  --line: #e8ede9;
+  --surface: #ffffff;
+  --red: #d34b4b;
+  --amber: #c78424;
+  --login-overlay: linear-gradient(90deg, rgba(7, 24, 16, 0.48), rgba(7, 24, 16, 0.72));
+  --login-panel: rgba(5, 20, 14, 0.94);
+  --login-frame: rgba(224, 245, 230, 0.28);
+  --login-label: #d3e2d7;
+  --login-muted: #a9c1b1;
+  --login-focus: #a9edbf;
+  --login-accent: #9ce0b1;
+  --login-soft-text: #f0f5f0;
+  --login-brand-border: rgba(224, 245, 230, 0.4);
+  --login-brand-text: #d8f3df;
+  --login-brand-background: rgba(17, 91, 56, 0.86);
+  --login-accent-glow: 0 0 14px rgba(137, 216, 159, 0.75);
+  --login-story-shade:
+    linear-gradient(180deg, rgba(5, 20, 14, 0.5), rgba(6, 25, 16, 0.88)),
+    linear-gradient(90deg, rgba(8, 29, 18, 0.16), rgba(8, 29, 18, 0.35));
+  --login-heading-shadow: 0 3px 24px rgba(0, 0, 0, 0.32);
+  --login-copy-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+  --login-chip-border: rgba(230, 247, 234, 0.35);
+  --login-chip-background: rgba(5, 32, 19, 0.38);
+  --login-input-border: rgba(202, 228, 209, 0.32);
+  --login-input-hover-border: rgba(202, 228, 209, 0.6);
+  --login-input-background: rgba(255, 255, 255, 0.055);
+  --login-input-focus-background: rgba(255, 255, 255, 0.09);
+  --login-demo-border: rgba(169, 237, 191, 0.22);
+  --login-demo-background: rgba(50, 160, 110, 0.1);
+  --login-divider: rgba(224, 245, 230, 0.14);
+  --login-caption-shadow: 0 1px 5px rgba(0, 0, 0, 0.6);
+  --login-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 360px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(50, 160, 110, 0.35);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: var(--green-950);
+  background: #ccebd8;
+}
