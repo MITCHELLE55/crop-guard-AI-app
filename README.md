@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Crop Guard AI
 
 Crop Guard AI is a React, TypeScript, and Vite frontend for an agricultural support application with two separate portals. Specialists enter at `/specialist/login`, and agricultural office coordinators enter at `/office/login`. Both sign in pages open local demo workspaces only; there is no real authentication service or live farmer data.
@@ -44,3 +45,6 @@ src/
 - Deep agricultural green, white, and light-green surfaces with red and amber alert states.
 
 The farmer names, case metrics, alerts, and activity shown in the UI are illustrative prototype data. The `services/` folder is reserved for API integration; no live farmer or agricultural records are currently connected.
+=======
+# crop-guard-AI-app
+>>>>>>> 885d003e401b29a0c1ab287bcce04ca1636be267
