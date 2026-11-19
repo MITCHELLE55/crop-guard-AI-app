@@ -1,14 +1,14 @@
 /**
- * This page is the agricultural office team's local support workspace.
- * Office coordinators use it to review farmer records, assign specialists, schedule field visits,
- * track resources, and view illustrative service activity.
- * The screen has an overview, farmer registry, visits, resources and schedules, and reports.
- * The sidebar changes between these sections. The top bar searches farmer records and returns to
- * the specialist dashboard. Forms add visits and assignments to local page state only.
- * All farmer, specialist, resource, and report values are demonstration data. Nothing is loaded
- * from or saved to an API. Data is ready immediately, so no network loading or server error state
- * applies. Empty registry searches show an explanatory message, and local actions show notices.
- * The office portal is opened from the specialist top bar and its return control opens Command Centre.
+ * This page is the local agricultural office workspace for office coordinators.
+ * What the user sees:
+ * - An office navigation sidebar for overview, farmer registry, visits, resources, and reports.
+ * - A top bar for searching the illustrative registry and opening specialist sign in.
+ * - Office records, local visit scheduling, resource summaries, and explanatory notices.
+ * What the user can do: review demonstration records, assign a specialist, schedule visits, and switch to specialist sign in.
+ * Data: farmer, specialist, resource, and report values are local examples; no service function loads or saves them.
+ * States: the screen has no network loading or server error state; empty registry searches show an explanation,
+ * and local actions show notices.
+ * Connections: coordinators enter at `/office/login`; the sign in link opens `/specialist/login`, not its workspace.
  */
 import { useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import Icon from '../../../components/Icon'
@@ -71,19 +71,19 @@ const navItems: { id: OfficeSection; label: string; icon: 'activity' | 'user' | 
 ]
 
 /**
- * Actions supplied by the app when it opens the agricultural office portal.
- * @property onSwitchPortal Returns to the specialist Command Centre dashboard.
- * @remarks `App.tsx` owns portal and specialist route selection.
+ * The action supplied by the app for leaving the office demo workspace.
+ * @property onOpenSpecialistLogin Opens specialist sign in and ends the current local demo portal session.
+ * @remarks `App.tsx` owns the separate portal paths and sign in flow.
  */
-type OfficePortalProps = { onSwitchPortal: () => void }
+type OfficePortalProps = { onOpenSpecialistLogin: () => void }
 
 /**
  * The agricultural office workspace for coordinating farmer support.
- * @param props The action that returns to the specialist dashboard.
+ * @param props The action that opens specialist sign in.
  * @returns The office navigation, selected workspace, and visit scheduling dialog when open.
- * @remarks `App.tsx` renders this separate portal when the specialist selects Agricultural office.
+ * @remarks `App.tsx` renders this portal after the office demo sign in at `/office/login`.
  */
-function OfficePortal({ onSwitchPortal }: OfficePortalProps) {
+function OfficePortal({ onOpenSpecialistLogin }: OfficePortalProps) {
   const [section, setSection] = useState<OfficeSection>('overview')
   const [farmers, setFarmers] = useState(initialFarmers)
   const [officeVisits, setOfficeVisits] = useState(initialVisits)
@@ -241,7 +241,7 @@ function OfficePortal({ onSwitchPortal }: OfficePortalProps) {
         </div>
       </aside>
 
-      {/* Search and the return action remain available while the coordinator changes sections. */}
+      {/* Search and the separate specialist sign in link remain available in every office section. */}
       <main className="office-main">
         <header className="office-topbar">
           <label className="office-search">
@@ -250,7 +250,7 @@ function OfficePortal({ onSwitchPortal }: OfficePortalProps) {
           </label>
           <div className="office-top-actions">
             <time className="office-date">{new Date().toLocaleDateString(undefined, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()}</time>
-            <button aria-label="Back to specialist dashboard" className="office-switch" onClick={onSwitchPortal} type="button"><Icon className="office-back-arrow" name="chevron" /> Back to specialist dashboard</button>
+            <button aria-label="Open specialist sign in" className="office-switch" onClick={onOpenSpecialistLogin} type="button"><Icon className="office-back-arrow" name="chevron" /> Specialist portal sign in</button>
           </div>
         </header>
 

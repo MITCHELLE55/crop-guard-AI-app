@@ -348,6 +348,29 @@
   letter-spacing: 0.2px;
 }
 
+.login-portal-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-top: 12px;
+  color: var(--login-accent);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.login-portal-link:hover {
+  color: var(--login-soft-text);
+}
+
+.login-portal-link:focus-visible {
+  border-radius: 3px;
+  outline: 3px solid var(--login-focus);
+  outline-offset: 3px;
+}
+
 .login-stage-footer {
   position: absolute;
   right: 24px;

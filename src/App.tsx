@@ -3,8 +3,21 @@ import SpecialistLayout from './layouts/SpecialistLayout'
 import CommandCentre from './portals/specialist/pages/CommandCentre'
 import type { SpecialistSection } from './portals/specialist/types'
 import OfficePortal from './portals/agricultural-office/pages/OfficePortal'
+import OfficeLogin from './portals/agricultural-office/pages/OfficeLogin'
 import SpecialistLogin from './portals/specialist/pages/SpecialistLogin'
 import './App.css'
+
+/**
+ * The two kinds of users who have separate demo workspaces.
+ * The name is used only to choose which local prototype screen to show.
+ */
+type PortalName = 'specialist' | 'office'
+
+/**
+ * The browser paths for the two sign in pages and their demo workspaces.
+ * Opening a workspace path without its matching in memory demo sign in sends the user back to sign in.
+ */
+type PortalPath = '/specialist/login' | '/office/login' | '/specialist' | '/office'
 
 const sectionContent: Partial<Record<
   SpecialistSection,
@@ -38,54 +51,141 @@ const sectionContent: Partial<Record<
 }
 
 /**
+ * Chooses the correct sign in or workspace page for a browser path.
+ * It keeps users on their own portal's sign in page unless that portal's local demo sign in has happened.
+ * @param pathname The current browser path, such as `/office` or `/specialist/login`.
+ * @param signedInPortal The portal signed into during this page load, or `null` when no demo sign in happened.
+ * @returns One of the supported portal paths, sending unknown paths to specialist sign in.
+ * @remarks `App` uses this when the page first opens and when the browser back or forward button is used.
+ */
+function resolvePortalPath(pathname: string, signedInPortal: PortalName | null): PortalPath {
+  // Sign in pages are public entry points for their own portal.
+  if (pathname === '/specialist/login' || pathname === '/office/login') return pathname
+
+  // A workspace is shown only after its matching local demo sign in.
+  if (pathname === '/specialist' && signedInPortal === 'specialist') return '/specialist'
+  if (pathname === '/office' && signedInPortal === 'office') return '/office'
+
+  // Send an unsigned user to the matching sign in page, and unknown paths to the specialist entry point.
+  return pathname === '/office' ? '/office/login' : '/specialist/login'
+}
+
+/**
  * The root component for the Crop Guard AI application.
- * It shows a local demo login first, then opens the selected specialist or office portal.
- * @returns The login screen or the selected portal workspace.
- * @remarks This component is rendered by `main.tsx` and does not authenticate or store credentials.
+ * It routes the specialist and agricultural office to separate sign in pages and demo workspaces.
+ * @returns The page that matches the current portal URL.
+ * @remarks `main.tsx` renders this component. Demo sign in is local only and does not authenticate or store credentials.
  */
 function App() {
-  const [showWorkspace, setShowWorkspace] = useState(false)
-  const [activePortal, setActivePortal] = useState<'specialist' | 'office'>('specialist')
+  const [signedInPortal, setSignedInPortal] = useState<PortalName | null>(null)
+  const [pathname, setPathname] = useState<PortalPath>(() =>
+    resolvePortalPath(window.location.pathname, null),
+  )
   const [activeSection, setActiveSection] = useState<SpecialistSection>('command-centre')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const pageTitle = showWorkspace
-    ? activePortal === 'office'
-      ? 'Agricultural Office | Crop Guard AI'
-      : 'Crop Guard AI | Specialist Portal'
-    : 'Agricultural Specialist Login | Crop Guard AI'
+  // Keep the browser tab title aligned with the portal and screen currently being shown.
+  const pageTitle = pathname.startsWith('/office')
+    ? 'Agricultural Office | Crop Guard AI'
+    : pathname === '/specialist'
+      ? 'Crop Guard AI | Specialist Portal'
+      : 'Agricultural Specialist Login | Crop Guard AI'
 
-  // Keep the browser tab title aligned with the portal or login screen the user is viewing.
   useEffect(() => {
     document.title = pageTitle
   }, [pageTitle])
 
+  // Keep React in sync with direct URL visits and browser back or forward navigation.
+  useEffect(() => {
+    const syncPath = () => {
+      const nextPath = resolvePortalPath(window.location.pathname, signedInPortal)
+
+      // Replace invalid or unsigned workspace URLs so the address bar matches the screen that is allowed.
+      if (window.location.pathname !== nextPath) {
+        window.history.replaceState({}, '', nextPath)
+      }
+
+      setPathname(nextPath)
+    }
+
+    syncPath()
+    window.addEventListener('popstate', syncPath)
+
+    return () => window.removeEventListener('popstate', syncPath)
+  }, [signedInPortal])
+
   /**
-   * Opens the prototype workspace after the browser accepts the required form fields.
-   * It deliberately ignores the entered credentials because no authentication service is connected.
-   * @returns Nothing; it only changes which screen is displayed.
+   * Changes the browser URL and the visible page without reloading the application.
+   * @param path The supported portal path, such as `/office/login`.
+   * @returns Nothing; it updates browser history and the current page state.
+   * @remarks Portal buttons use this so their URL can be bookmarked and browser navigation works.
    */
-  const handleDemoSignIn = () => {
-    setShowWorkspace(true)
+  const navigateTo = (path: PortalPath) => {
+    // Add a browser history entry only when the destination is different from the current URL.
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, '', path)
+    }
+    setPathname(path)
   }
 
-  // Keep the existing workspaces reachable while the login experience remains a local-only prototype.
-  if (!showWorkspace) {
-    return <SpecialistLogin onSignIn={handleDemoSignIn} />
+  /**
+   * Opens the selected portal's local demo workspace after its sign in form is submitted.
+   * The entered credentials are deliberately ignored because no authentication service is connected.
+   * @param portal The portal whose sign in form was submitted, either `specialist` or `office`.
+   * @returns Nothing; it remembers the demo portal for this page load and opens its workspace.
+   * @remarks Both separate sign in pages call this after the browser validates their required fields.
+   */
+  const handleDemoSignIn = (portal: PortalName) => {
+    setSignedInPortal(portal)
+    // Specialists always return to their main section after the demo sign in is submitted.
+    if (portal === 'specialist') {
+      setActiveSection('command-centre')
+    }
+    navigateTo(portal === 'office' ? '/office' : '/specialist')
   }
 
-  if (activePortal === 'office') {
-    // The office return action always opens the dashboard, not the previously selected specialist module.
-    return <OfficePortal onSwitchPortal={() => { setActivePortal('specialist'); setActiveSection('command-centre') }} />
+  /**
+   * Opens the office sign in page and ends the current local demo portal session.
+   * @returns Nothing; the browser moves to `/office/login`.
+   * @remarks The specialist navigation uses this instead of opening the office workspace directly.
+   */
+  const handleOpenOfficeLogin = () => {
+    setSignedInPortal(null)
+    navigateTo('/office/login')
   }
 
+  /**
+   * Opens the specialist sign in page and ends the current local demo portal session.
+   * @returns Nothing; the browser moves to `/specialist/login`.
+   * @remarks The office navigation uses this instead of opening the specialist workspace directly.
+   */
+  const handleOpenSpecialistLogin = () => {
+    setSignedInPortal(null)
+    navigateTo('/specialist/login')
+  }
+
+  // Each portal has its own sign in screen and submits to its own local demo workspace.
+  if (pathname === '/specialist/login') {
+    return <SpecialistLogin onSignIn={() => handleDemoSignIn('specialist')} />
+  }
+
+  if (pathname === '/office/login') {
+    return <OfficeLogin onSignIn={() => handleDemoSignIn('office')} />
+  }
+
+  // Office portal navigation leads to specialist sign in, never straight into that workspace.
+  if (pathname === '/office' && signedInPortal === 'office') {
+    return <OfficePortal onOpenSpecialistLogin={handleOpenSpecialistLogin} />
+  }
+
+  // The specialist workspace remains grouped inside its own layout and navigation.
   return (
     <SpecialistLayout
       activeSection={activeSection}
       onNavigate={setActiveSection}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
-      onSwitchPortal={() => setActivePortal('office')}
+      onOpenOfficeLogin={handleOpenOfficeLogin}
     >
       {activeSection === 'command-centre'
         || activeSection === 'consultation'

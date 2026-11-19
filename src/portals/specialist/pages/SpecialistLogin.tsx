@@ -1,11 +1,14 @@
 /**
- * This page is the entry screen for agricultural specialists using Crop Guard AI.
- * Specialists see a farm photo and product introduction on the left, with a sign in form on the right.
- * They can enter an email and password to open the existing specialist workspace in local demo mode.
- * The page does not load or send data, and it does not store the form values.
- * Browser form checks handle missing or incorrectly formatted values; there are no network loading,
- * server error, or empty data states because no authentication service is connected.
- * It opens the specialist workspace through the callback supplied by the root application.
+ * This page is the separate sign in screen for agricultural specialists using Crop Guard AI.
+ * Who uses it: agricultural specialists.
+ * What the user sees:
+ * - A farm photo and product introduction on the left.
+ * - A work email and password form, a demo access note, and an office sign in link on the right.
+ * What the user can do: submit the form to open the specialist demo workspace or go to `/office/login`.
+ * Data: this page does not load or send data and does not store form values.
+ * States: browser form checks handle missing or incorrectly formatted values; no network loading, server
+ * error, or empty data state is needed because no authentication service is connected.
+ * Connections: this page opens `/specialist` through the parent callback, while office staff use `/office/login`.
  */
 import { type FormEvent } from 'react'
 import coverImage from '../../../assets/login coverpage.jpg'
@@ -27,7 +30,7 @@ interface SpecialistLoginProps {
  * It uses the project farm cover image and a local demo handoff instead of a real authentication request.
  * @param props The parent supplied sign in callback.
  * @returns The login page with its farm image, form, and demo access notice.
- * @remarks The root `App` component displays this page before either existing portal.
+ * @remarks The root `App` component displays this page at `/specialist/login`.
  */
 function SpecialistLogin({ onSignIn }: SpecialistLoginProps) {
   /**
@@ -121,6 +124,9 @@ function SpecialistLogin({ onSignIn }: SpecialistLoginProps) {
                 This demo does not check, send, or save your sign in details.
               </span>
             </p>
+            <a className="login-portal-link" href="/office/login">
+              Agricultural office staff? Sign in to the office portal
+            </a>
           </div>
           <footer className="login-panel-footer">
             <span>Crop Guard AI</span>

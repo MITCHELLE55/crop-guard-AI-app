@@ -50,7 +50,7 @@ const navigationGroups: { label: string; items: NavigationItem[] }[] = [
  * @property onNavigate Opens the selected specialist section.
  * @property searchQuery The shared search field value.
  * @property onSearchChange Updates the shared search field value.
- * @property onSwitchPortal Returns to the agricultural office portal.
+ * @property onOpenOfficeLogin Opens the separate agricultural office sign in page.
  * @property children The specialist page displayed beside the sidebar.
  * @remarks `App.tsx` provides these values around each specialist dashboard view.
  */
@@ -59,13 +59,13 @@ type SpecialistLayoutProps = {
   onNavigate: (section: SpecialistSection) => void
   searchQuery: string
   onSearchChange: (value: string) => void
-  onSwitchPortal: () => void
+  onOpenOfficeLogin: () => void
   children: ReactNode
 }
 
 /**
  * The shared frame around specialist pages.
- * @param props The selected section, shared search, portal switch action, and page content.
+ * @param props The selected section, shared search, office sign in action, and page content.
  * @returns A sidebar, top bar, and the specialist page supplied as children.
  * @remarks `App.tsx` wraps the command centre in this layout for specialist users.
  */
@@ -74,7 +74,7 @@ function SpecialistLayout({
   onNavigate,
   searchQuery,
   onSearchChange,
-  onSwitchPortal,
+  onOpenOfficeLogin,
   children,
 }: SpecialistLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -170,8 +170,13 @@ function SpecialistLayout({
             <span className="search-shortcut">⌘ K</span>
           </label>
           <div className="topbar-actions">
-            <button className="portal-switch" onClick={onSwitchPortal} type="button">
-              Agricultural office
+            <button
+              aria-label="Open agricultural office sign in"
+              className="portal-switch"
+              onClick={onOpenOfficeLogin}
+              type="button"
+            >
+              Office sign in
               <Icon name="chevron" />
             </button>
             <div className="online-pill"><span /> Available</div>
